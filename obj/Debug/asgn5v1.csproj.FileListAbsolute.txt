@@ -15,3 +15,12 @@ C:\Personal\asgn5student\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
 C:\Personal\asgn5student\obj\Debug\asgn5v1.csproj.CoreCompileInputs.cache
 C:\Personal\asgn5student\obj\Debug\asgn5v1.exe
 C:\Personal\asgn5student\obj\Debug\asgn5v1.pdb
+C:\Users\CK\source\repos\asgn5student\bin\Debug\asgn5v1.exe
+C:\Users\CK\source\repos\asgn5student\bin\Debug\asgn5v1.pdb
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.csprojResolveAssemblyReference.cache
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.AboutDialogBox.resources
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.Transformer.resources
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.csproj.CoreCompileInputs.cache
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.exe
+C:\Users\CK\source\repos\asgn5student\obj\Debug\asgn5v1.pdb

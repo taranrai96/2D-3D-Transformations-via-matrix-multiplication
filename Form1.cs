@@ -22,8 +22,7 @@ namespace asgn5v1
 		int numpts = 0;
 		int numlines = 0;
 		bool gooddata = false;
-        //double cosvalue = Math.Cos(0.05);
-        //double sinvalue = Math.Sin(0.05);
+        Timer timer = new Timer();
         double xcentre; //= 10.5;
         double ycentre; //= 9.5;
         double zcentre; //= 10.0;
@@ -376,8 +375,9 @@ namespace asgn5v1
 
 		void RestoreInitialImage()
 		{
-			Invalidate();
-		} // end of RestoreInitialImage
+            scrnpts = initialctrans();
+            Refresh();
+        } // end of RestoreInitialImage
 
 		bool GetNewData()
 		{
@@ -563,6 +563,7 @@ namespace asgn5v1
             ymax = -(double)Screen.PrimaryScreen.Bounds.Height;
             zmin = (double)Screen.PrimaryScreen.Bounds.Width;
             zmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+            timer.Stop();
 
             for (int i = 0; i < numpts; i++)
             {
@@ -686,7 +687,6 @@ namespace asgn5v1
                 ctrans[3, 2] = zcentre;
                 scrnpts = multiplyMatrix(scrnpts, ctrans);
                 Refresh();
-				
 			}
 			if (e.Button == rotzby1btn) 
 			{
@@ -707,32 +707,68 @@ namespace asgn5v1
                 ctrans[3, 2] = zcentre;
                 scrnpts = multiplyMatrix(scrnpts, ctrans);
                 Refresh();
-				
 			}
 
 			if (e.Button == rotxbtn) 
 			{
-               
-				
-			}
+                timer = new Timer();
+                timer.Tick += new EventHandler(rotate_x_func);
+                timer.Interval = 1;
+                timer.Start();
+
+            }
 			if (e.Button == rotybtn) 
 			{
-				
-			}
+                timer = new Timer();
+                timer.Tick += new EventHandler(rotate_y_func);
+                timer.Interval = 1;
+                timer.Start();
+            }
 			
 			if (e.Button == rotzbtn) 
 			{
-				
-			}
+                timer = new Timer();
+                timer.Tick += new EventHandler(rotate_z_func);
+                timer.Interval = 1;
+                timer.Start();
+            }
 
 			if(e.Button == shearleftbtn)
 			{
-				Refresh();
+                setIdentity(ctrans, 4, 4);
+                ctrans[3, 0] = -xcentre;
+                ctrans[3, 1] = -ycentre;
+                ctrans[3, 2] = -zcentre;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                setIdentity(ctrans, 4, 4);
+                ctrans[1, 0] = 0.1;
+                ctrans[3, 0] = -0.1 * ymin;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                setIdentity(ctrans, 4, 4);
+                ctrans[3, 0] = xcentre;
+                ctrans[3, 1] = ycentre;
+                ctrans[3, 2] = zcentre;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                Refresh();
 			}
 
-			if (e.Button == shearrightbtn) 
-			{
-				Refresh();
+			if (e.Button == shearrightbtn)
+            {
+                setIdentity(ctrans, 4, 4);
+                ctrans[3, 0] = -xcentre;
+                ctrans[3, 1] = -ycentre;
+                ctrans[3, 2] = -zcentre;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                setIdentity(ctrans, 4, 4);
+                ctrans[1, 0] = -0.1;
+                ctrans[3, 0] = 0.1 * ymin;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                setIdentity(ctrans, 4, 4);
+                ctrans[3, 0] = xcentre;
+                ctrans[3, 1] = ycentre;
+                ctrans[3, 2] = zcentre;
+                scrnpts = multiplyMatrix(scrnpts, ctrans);
+                Refresh();
 			}
 
 			if (e.Button == resetbtn)
@@ -747,8 +783,134 @@ namespace asgn5v1
 
 		}
 
-		
-	}
+        private void rotate_x_func(object sender, EventArgs e)
+        {
+            xmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            xmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+            ymin = (double)Screen.PrimaryScreen.Bounds.Height;
+            ymax = -(double)Screen.PrimaryScreen.Bounds.Height;
+            zmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            zmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+
+            for (int i = 0; i < numpts; i++)
+            {
+                if (scrnpts[i, 0] < xmin) xmin = scrnpts[i, 0];
+                if (scrnpts[i, 0] > xmax) xmax = scrnpts[i, 0];
+                if (scrnpts[i, 1] < ymin) ymin = scrnpts[i, 1];
+                if (scrnpts[i, 1] > ymax) ymax = scrnpts[i, 1];
+                if (scrnpts[i, 2] < zmin) zmin = scrnpts[i, 2];
+                if (scrnpts[i, 2] > zmax) zmax = scrnpts[i, 2];
+            }
+
+            xcentre = (xmax + xmin) / 2;
+            ycentre = (ymax + ymin) / 2;
+            zcentre = (zmax + zmin) / 2;
+
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = -xcentre;
+            ctrans[3, 1] = -ycentre;
+            ctrans[3, 2] = -zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[1, 1] = Math.Cos(0.05);
+            ctrans[1, 2] = -Math.Sin(0.05);
+            ctrans[2, 1] = Math.Sin(0.05);
+            ctrans[2, 2] = Math.Cos(0.05);
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = xcentre;
+            ctrans[3, 1] = ycentre;
+            ctrans[3, 2] = zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            Refresh();
+        }
+
+        private void rotate_y_func(object sender, EventArgs e)
+        {
+            xmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            xmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+            ymin = (double)Screen.PrimaryScreen.Bounds.Height;
+            ymax = -(double)Screen.PrimaryScreen.Bounds.Height;
+            zmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            zmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+
+            for (int i = 0; i < numpts; i++)
+            {
+                if (scrnpts[i, 0] < xmin) xmin = scrnpts[i, 0];
+                if (scrnpts[i, 0] > xmax) xmax = scrnpts[i, 0];
+                if (scrnpts[i, 1] < ymin) ymin = scrnpts[i, 1];
+                if (scrnpts[i, 1] > ymax) ymax = scrnpts[i, 1];
+                if (scrnpts[i, 2] < zmin) zmin = scrnpts[i, 2];
+                if (scrnpts[i, 2] > zmax) zmax = scrnpts[i, 2];
+            }
+
+            xcentre = (xmax + xmin) / 2;
+            ycentre = (ymax + ymin) / 2;
+            zcentre = (zmax + zmin) / 2;
+
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = -xcentre;
+            ctrans[3, 1] = -ycentre;
+            ctrans[3, 2] = -zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[0, 0] = Math.Cos(0.05);
+            ctrans[0, 2] = -Math.Sin(0.05);
+            ctrans[2, 0] = Math.Sin(0.05);
+            ctrans[2, 2] = Math.Cos(0.05);
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = xcentre;
+            ctrans[3, 1] = ycentre;
+            ctrans[3, 2] = zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            Refresh();
+        }
+
+        private void rotate_z_func(object sender, EventArgs e)
+        {
+            xmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            xmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+            ymin = (double)Screen.PrimaryScreen.Bounds.Height;
+            ymax = -(double)Screen.PrimaryScreen.Bounds.Height;
+            zmin = (double)Screen.PrimaryScreen.Bounds.Width;
+            zmax = -(double)Screen.PrimaryScreen.Bounds.Width;
+
+            for (int i = 0; i < numpts; i++)
+            {
+                if (scrnpts[i, 0] < xmin) xmin = scrnpts[i, 0];
+                if (scrnpts[i, 0] > xmax) xmax = scrnpts[i, 0];
+                if (scrnpts[i, 1] < ymin) ymin = scrnpts[i, 1];
+                if (scrnpts[i, 1] > ymax) ymax = scrnpts[i, 1];
+                if (scrnpts[i, 2] < zmin) zmin = scrnpts[i, 2];
+                if (scrnpts[i, 2] > zmax) zmax = scrnpts[i, 2];
+            }
+
+            xcentre = (xmax + xmin) / 2;
+            ycentre = (ymax + ymin) / 2;
+            zcentre = (zmax + zmin) / 2;
+
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = -xcentre;
+            ctrans[3, 1] = -ycentre;
+            ctrans[3, 2] = -zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[0, 0] = Math.Cos(0.05);
+            ctrans[0, 1] = -Math.Sin(0.05);
+            ctrans[1, 0] = Math.Sin(0.05);
+            ctrans[1, 1] = Math.Cos(0.05);
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            setIdentity(ctrans, 4, 4);
+            ctrans[3, 0] = xcentre;
+            ctrans[3, 1] = ycentre;
+            ctrans[3, 2] = zcentre;
+            scrnpts = multiplyMatrix(scrnpts, ctrans);
+            Refresh();
+        }
+
+
+    }
 
 	
 }
